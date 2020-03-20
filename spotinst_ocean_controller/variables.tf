@@ -29,3 +29,7 @@ variable "disable_auto_update" {
   description = "Disable the auto-update feature"
   default     = false
 }
+
+variable "enabled" {
+  description = "Whether should deploy the controller or not"
+}
