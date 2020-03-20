@@ -1,5 +1,5 @@
 resource "kubernetes_config_map" "configmap" {
-  count = "${var.enabled == true ? "1" : "0"}"
+  count = "${var.enabled == "true" ? "1" : "0"}"
   metadata {
     name      = "spotinst-kubernetes-cluster-controller-config"
     namespace = "kube-system"
@@ -20,7 +20,7 @@ resource "kubernetes_config_map" "configmap" {
 }
 
 resource "kubernetes_service_account" "default" {
-  count = "${var.enabled == true ? "1" : "0"}"
+  count = "${var.enabled == "true" ? "1" : "0"}"
   metadata {
     name      = "spotinst-kubernetes-cluster-controller"
     namespace = "kube-system"
@@ -30,7 +30,7 @@ resource "kubernetes_service_account" "default" {
 }
 
 resource "kubernetes_cluster_role" "default" {
-  count = "${var.enabled == true ? "1" : "0"}"
+  count = "${var.enabled == "true" ? "1" : "0"}"
   metadata {
     name = "spotinst-kubernetes-cluster-controller"
   }
