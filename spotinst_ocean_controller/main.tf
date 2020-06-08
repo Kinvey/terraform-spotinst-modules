@@ -1,5 +1,6 @@
 resource "kubernetes_config_map" "configmap" {
   count = "${var.enabled  ? "1" : "0"}"
+
   metadata {
     name      = "spotinst-kubernetes-cluster-controller-config"
     namespace = "kube-system"
@@ -21,6 +22,7 @@ resource "kubernetes_config_map" "configmap" {
 
 resource "kubernetes_service_account" "default" {
   count = "${var.enabled  ? "1" : "0"}"
+
   metadata {
     name      = "spotinst-kubernetes-cluster-controller"
     namespace = "kube-system"
@@ -31,6 +33,7 @@ resource "kubernetes_service_account" "default" {
 
 resource "kubernetes_cluster_role" "default" {
   count = "${var.enabled  ? "1" : "0"}"
+
   metadata {
     name = "spotinst-kubernetes-cluster-controller"
   }
@@ -44,49 +47,41 @@ resource "kubernetes_cluster_role" "default" {
     resources  = ["pods", "nodes", "services", "namespaces", "replicationcontrollers", "limitranges", "events", "persistentvolumes", "persistentvolumeclaims"]
     verbs      = ["get", "list"]
   }
-
   rule {
     api_groups = ["apps"]
     resources  = ["deployments", "daemonsets", "statefulsets", "replicasets"]
     verbs      = ["get", "list"]
   }
-
   rule {
     api_groups = ["storage.k8s.io"]
     resources  = ["storageclasses"]
     verbs      = ["get", "list"]
   }
-
   rule {
     api_groups = ["batch"]
     resources  = ["jobs"]
     verbs      = ["get", "list"]
   }
-
   rule {
     api_groups = ["extensions"]
     resources  = ["replicasets", "daemonsets"]
     verbs      = ["get", "list"]
   }
-
   rule {
     api_groups = ["policy"]
     resources  = ["poddisruptionbudgets"]
     verbs      = ["get", "list"]
   }
-
   rule {
     api_groups = ["metrics.k8s.io"]
     resources  = ["pods"]
     verbs      = ["get", "list"]
   }
-
   rule {
     api_groups = ["autoscaling"]
     resources  = ["horizontalpodautoscalers"]
     verbs      = ["get", "list"]
   }
-
   rule {
     non_resource_urls = ["/version/", "/version"]
     verbs             = ["get"]
@@ -101,13 +96,11 @@ resource "kubernetes_cluster_role" "default" {
     resources  = ["nodes"]
     verbs      = ["patch", "update"]
   }
-
   rule {
     api_groups = [""]
     resources  = ["pods"]
     verbs      = ["delete"]
   }
-
   rule {
     api_groups = [""]
     resources  = ["pods/eviction"]
@@ -133,7 +126,6 @@ resource "kubernetes_cluster_role" "default" {
     resources  = ["certificatesigningrequests"]
     verbs      = ["get", "list"]
   }
-
   rule {
     api_groups = ["certificates.k8s.io"]
     resources  = ["certificatesigningrequests/approval"]
@@ -150,7 +142,6 @@ resource "kubernetes_cluster_role" "default" {
     resource_names = ["spotinst-kubernetes-cluster-controller"]
     verbs          = ["patch", "update", "escalate"]
   }
-
   rule {
     api_groups     = ["apps"]
     resources      = ["deployments"]
@@ -167,13 +158,11 @@ resource "kubernetes_cluster_role" "default" {
     resources  = ["deployments", "daemonsets"]
     verbs      = ["get", "list", "patch", "update", "create", "delete"]
   }
-
   rule {
     api_groups = ["extensions"]
     resources  = ["daemonsets"]
     verbs      = ["get", "list", "patch", "update", "create", "delete"]
   }
-
   rule {
     api_groups = [""]
     resources  = ["pods"]
@@ -183,7 +172,7 @@ resource "kubernetes_cluster_role" "default" {
 
 resource "kubernetes_cluster_role_binding" "default" {
   count = "${var.enabled  ? "1" : "0"}"
-  
+
   metadata {
     name = "spotinst-kubernetes-cluster-controller"
   }
@@ -204,6 +193,13 @@ resource "kubernetes_cluster_role_binding" "default" {
 
 resource "kubernetes_deployment" "default" {
   count = "${var.enabled  ? "1" : "0"}"
+
+  lifecycle {
+    ignore_changes = [
+      "spec.0.template.0.spec.0.container.0.image",
+    ]
+  }
+
   metadata {
     name      = "spotinst-kubernetes-cluster-controller"
     namespace = "kube-system"
@@ -237,6 +233,7 @@ resource "kubernetes_deployment" "default" {
           node_affinity {
             preferred_during_scheduling_ignored_during_execution {
               weight = 100
+
               preference {
                 match_expressions {
                   key      = "node-role.kubernetes.io/master"
@@ -249,6 +246,7 @@ resource "kubernetes_deployment" "default" {
           pod_affinity {
             preferred_during_scheduling_ignored_during_execution {
               weight = 100
+
               pod_affinity_term {
                 label_selector {
                   match_expressions {
@@ -257,6 +255,7 @@ resource "kubernetes_deployment" "default" {
                     values   = ["spotinst-kubernetes-cluster-controller"]
                   }
                 }
+
                 topology_key = "kubernetes.io/hostname"
               }
             }
