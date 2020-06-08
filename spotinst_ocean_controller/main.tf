@@ -257,7 +257,7 @@ resource "kubernetes_deployment" "default" {
         }
 
         container {
-          image             = "spotinst/kubernetes-cluster-controller:1.0.57"
+          image             = "spotinst/kubernetes-cluster-controller:1.0.59"
           name              = "spotinst-kubernetes-cluster-controller"
           image_pull_policy = "Always"
 
