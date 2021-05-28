@@ -194,12 +194,6 @@ resource "kubernetes_cluster_role_binding" "default" {
 resource "kubernetes_deployment" "default" {
   count = "${var.enabled  ? "1" : "0"}"
 
-  lifecycle {
-    ignore_changes = [
-      "spec.0.template.0.spec.0.container.0.image",
-    ]
-  }
-
   metadata {
     name      = "spotinst-kubernetes-cluster-controller"
     namespace = "kube-system"
@@ -263,7 +257,7 @@ resource "kubernetes_deployment" "default" {
         }
 
         container {
-          image             = "spotinst/kubernetes-cluster-controller:1.0.57"
+          image             = "spotinst/kubernetes-cluster-controller:1.0.75"
           name              = "spotinst-kubernetes-cluster-controller"
           image_pull_policy = "Always"
 

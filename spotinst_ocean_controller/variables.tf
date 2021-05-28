@@ -6,6 +6,10 @@ variable "spotinst_account" {
   description = "Your Spotinst account ID"
 }
 
+variable "controller_version" {
+  description = "The ocean controller version to use"
+}
+
 variable "spotinst_cluster_identifier" {
   description = "Your cluster identifier"
 }
